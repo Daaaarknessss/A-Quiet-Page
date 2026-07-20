@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(xargs grep -l \"GenericSchema\")",
+      "Bash(npm run *)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(chromium-cli --session quietpage)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(node -e \"require.resolve\\('playwright'\\)\")",
+      "Bash(npx --yes playwright --help)",
+      "Bash(npx --yes playwright install chromium --with-deps)",
+      "Bash(npx --yes playwright install chromium)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(cat /tmp/vite-dev.log 2>&1)",
+      "Read(//tmp/**)",
+      "Bash(lsof -ti:5174 -sTCP:LISTEN)",
+      "Bash(xargs -r kill)",
+      "Bash(sleep 2 && cat /tmp/vite-dev2.log)",
+      "Bash(netstat -ano)",
+      "Bash(powershell.exe -NoProfile -Command \"Stop-Process -Id 23504,6928 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(powershell.exe -NoProfile -Command \"Stop-Process -Id 15008 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(sleep 2 && cat /tmp/vite-motion.log)"
+    ]
+  }
+}
