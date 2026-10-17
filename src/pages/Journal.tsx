@@ -1,12 +1,12 @@
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { CalendarDays, List } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { usePoems, useDeletePoem } from '@/hooks/usePoems'
 import { SearchBar } from '@/components/SearchBar'
 import { PoemList } from '@/components/PoemList'
 import { Stats } from '@/components/Stats'
-import { Calendar } from '@/components/Calendar'
+import { CalendarReader } from '@/components/CalendarReader'
 import { EmptyState } from '@/components/EmptyState'
 import { useParallax } from '@/hooks/useParallax'
 import { cn } from '@/lib/cn'
@@ -14,13 +14,36 @@ import { cn } from '@/lib/cn'
 export default function Journal() {
   const navigate = useNavigate()
   const { data: poems = [], isLoading } = usePoems()
-  const deletePoem = useDeletePoem()
+  const { mutate: removePoem } = useDeletePoem()
   const headingRef = useRef<HTMLHeadingElement>(null)
   useParallax(headingRef, 18)
 
   const [query, setQuery] = useState('')
   const [year, setYear] = useState<'all' | number>('all')
-  const [showCalendar, setShowCalendar] = useState(false)
+  // View and selected day live in the URL, so coming back from the editor
+  // reopens the same page.
+  const [params, setParams] = useSearchParams()
+  const showCalendar = params.get('view') !== 'list'
+  const selectedDay = params.get('day')
+
+  const updateParams = useCallback(
+    (changes: Record<string, string | null>) => {
+      setParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          for (const [k, v] of Object.entries(changes)) {
+            if (v === null) next.delete(k)
+            else next.set(k, v)
+          }
+          return next
+        },
+        { replace: true },
+      )
+    },
+    [setParams],
+  )
+  const selectDay = useCallback((day: string) => updateParams({ day }), [updateParams])
+  const handleDelete = useCallback((id: string) => removePoem(id), [removePoem])
 
   const years = useMemo(() => {
     const set = new Set(poems.map((p) => new Date(p.created_at).getFullYear()))
@@ -81,8 +104,10 @@ export default function Journal() {
 
             <button
               type="button"
-              onClick={() => setShowCalendar((v) => !v)}
+              onClick={() => updateParams({ view: showCalendar ? 'list' : null })}
               aria-label={showCalendar ? 'Show list' : 'Show calendar'}
+              title={showCalendar ? 'Show list' : 'Show calendar'}
+              data-cursor="hover"
               className="text-ink-faint transition-colors duration-300 hover:text-ink"
             >
               {showCalendar ? <List size={17} strokeWidth={1.5} /> : <CalendarDays size={17} strokeWidth={1.5} />}
@@ -91,9 +116,9 @@ export default function Journal() {
         </div>
 
         {showCalendar ? (
-          <Calendar poems={filtered} />
+          <CalendarReader poems={filtered} selectedKey={selectedDay} onSelect={selectDay} />
         ) : filtered.length > 0 ? (
-          <PoemList poems={filtered} onDelete={(id) => deletePoem.mutate(id)} />
+          <PoemList poems={filtered} onDelete={handleDelete} />
         ) : (
           <p className="py-16 text-center font-display italic text-ink-faint">No pages match your search.</p>
         )}

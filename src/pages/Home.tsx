@@ -54,13 +54,13 @@ export default function Home() {
         .fromTo(
           quoteRef.current,
           { opacity: 0, y: 12, filter: 'blur(6px)' },
-          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9 },
+          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, clearProps: 'filter' },
           '-=0.75',
         )
         .fromTo(
           buttonRef.current,
           { opacity: 0, y: 10, filter: 'blur(8px)' },
-          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7 },
+          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, clearProps: 'filter' },
           '-=0.55',
         )
     })

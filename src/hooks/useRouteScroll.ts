@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { useLocation, useNavigationType } from 'react-router-dom'
 import { getScrollY, scrollToY } from '@/lib/scroll'
 
@@ -13,8 +13,17 @@ if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
 export function useRouteScroll() {
   const location = useLocation()
   const navigationType = useNavigationType()
+  const prevPathname = useRef<string | null>(null)
 
   useLayoutEffect(() => {
+    const samePage = prevPathname.current === location.pathname
+    prevPathname.current = location.pathname
+    const save = () => positions.set(location.key, getScrollY())
+
+    // Query-string updates on the same page (e.g. picking a day in the
+    // archive calendar) shouldn't move the page.
+    if (samePage && navigationType !== 'POP') return save
+
     const target = navigationType === 'POP' ? (positions.get(location.key) ?? 0) : 0
     scrollToY(target)
     // Restore again after the incoming page has painted, in case its
@@ -23,7 +32,7 @@ export function useRouteScroll() {
 
     return () => {
       cancelAnimationFrame(frame)
-      positions.set(location.key, getScrollY())
+      save()
     }
-  }, [location.key, navigationType])
+  }, [location.key, location.pathname, navigationType])
 }

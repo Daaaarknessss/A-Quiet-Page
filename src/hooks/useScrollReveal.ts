@@ -32,6 +32,9 @@ export function useScrollReveal(containerRef: RefObject<HTMLElement | null>, dep
             ease: 'expo.out',
             stagger: 0.08,
             overwrite: true,
+            // A lingering `filter`/`transform` keeps every revealed row on
+            // its own GPU layer for the life of the page.
+            clearProps: 'filter,transform',
           })
           const batchLines = batch
             .map((el) => el.closest('.poem-row')?.querySelector<HTMLElement>('[data-reveal-line]'))
@@ -43,6 +46,7 @@ export function useScrollReveal(containerRef: RefObject<HTMLElement | null>, dep
             stagger: 0.08,
             delay: 0.15,
             overwrite: true,
+            clearProps: 'transform',
           })
         },
       })

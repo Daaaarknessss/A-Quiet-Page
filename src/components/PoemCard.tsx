@@ -1,10 +1,11 @@
+import { memo } from 'react'
 import { motion } from 'framer-motion'
 import { Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { formatCardDate, weekdayName } from '@/lib/date'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { SPRING } from '@/lib/motion'
-import { firstLine, readingTimeMinutes, wordCount, type Poem } from '@/types/poem'
+import { wordCount, type Poem } from '@/types/poem'
 
 interface PoemCardProps {
   poem: Poem
@@ -12,7 +13,9 @@ interface PoemCardProps {
   tilt?: number
 }
 
-export function PoemCard({ poem, onDelete, tilt = 0 }: PoemCardProps) {
+// Memoized: the archive re-renders on every search keystroke, and each card
+// carries layout + magnetic animation that's expensive to re-run 100+ times.
+export const PoemCard = memo(function PoemCard({ poem, onDelete, tilt = 0 }: PoemCardProps) {
   const date = new Date(poem.created_at)
   const { day, month, year } = formatCardDate(date)
   const magneticRef = useMagnetic<HTMLAnchorElement>(0.12, 6)
@@ -47,12 +50,12 @@ export function PoemCard({ poem, onDelete, tilt = 0 }: PoemCardProps) {
             <div className="mb-1.5 text-[11px] uppercase tracking-[0.12em] text-ink-faint">
               {weekdayName(date)}
             </div>
-            <p className="truncate font-display text-xl italic text-ink-soft transition-colors duration-300 group-hover:text-ink sm:text-[22px]">
-              {firstLine(poem.content)}
+            {/* The whole poem, line breaks kept — clamped so long ones don't
+                swallow the list. */}
+            <p className="line-clamp-4 whitespace-pre-line pr-8 font-display text-xl italic leading-snug text-ink-soft transition-colors duration-300 group-hover:text-ink sm:text-[22px]">
+              {poem.content.trim() || 'An empty page'}
             </p>
-            <div className="mt-2 text-xs text-ink-faint">
-              {wordCount(poem.content)} words · {readingTimeMinutes(poem.content)} min read
-            </div>
+            <div className="mt-2 text-xs text-ink-faint">{wordCount(poem.content)} words</div>
           </div>
         </Link>
       </div>
@@ -72,4 +75,4 @@ export function PoemCard({ poem, onDelete, tilt = 0 }: PoemCardProps) {
       </motion.button>
     </motion.div>
   )
-}
+})

@@ -35,7 +35,7 @@ export function PaperContainer({
     <As
       ref={ref as Ref<HTMLDivElement>}
       className={cn(
-        'rounded-xl bg-paper-soft/70 border border-line/70 shadow-soft backdrop-blur-[1px]',
+        'rounded-xl bg-paper-soft/70 border border-line/70 shadow-soft',
         className,
       )}
     >

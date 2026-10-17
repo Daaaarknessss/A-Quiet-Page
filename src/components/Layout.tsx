@@ -1,7 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import { JournalHeader } from '@/components/JournalHeader'
-import { GrainOverlay } from '@/components/GrainOverlay'
 import { AmbientBackground } from '@/components/AmbientBackground'
 import { CustomCursor } from '@/components/CustomCursor'
 import { useRouteScroll } from '@/hooks/useRouteScroll'
@@ -13,7 +12,6 @@ export function Layout() {
   return (
     <div className="relative min-h-dvh">
       <AmbientBackground />
-      <GrainOverlay />
       <CustomCursor />
 
       <div className="relative z-10">

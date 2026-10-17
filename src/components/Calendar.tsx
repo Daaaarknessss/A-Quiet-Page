@@ -1,24 +1,32 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { monthName } from '@/lib/date'
+import { cn } from '@/lib/cn'
+import { dayKey, monthName } from '@/lib/date'
 import { useMagnetic } from '@/hooks/useMagnetic'
 import { SPRING } from '@/lib/motion'
-import type { Poem } from '@/types/poem'
 
 const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
+function monthOf(key: string) {
+  const [y, m] = key.split('-').map(Number)
+  return new Date(y, m - 1, 1)
+}
+
 function CalendarDay({
   day,
-  poem,
+  hasPoem,
   isToday,
-  onOpen,
+  isSelected,
+  label,
+  onSelect,
 }: {
   day: number
-  poem: Poem | undefined
+  hasPoem: boolean
   isToday: boolean
-  onOpen: (poem: Poem) => void
+  isSelected: boolean
+  label: string
+  onSelect: () => void
 }) {
   const magneticRef = useMagnetic<HTMLButtonElement>(0.3, 5)
 
@@ -26,13 +34,25 @@ function CalendarDay({
     <button
       ref={magneticRef}
       type="button"
-      disabled={!poem}
-      data-cursor={poem ? 'hover' : undefined}
-      onClick={() => poem && onOpen(poem)}
-      className="mx-auto flex h-9 w-9 flex-col items-center justify-center gap-1 rounded-full text-sm text-ink-soft transition-colors duration-300 enabled:hover:bg-paper-soft enabled:hover:text-ink disabled:text-ink-faint/50"
+      disabled={!hasPoem}
+      aria-pressed={isSelected}
+      aria-label={label}
+      data-cursor={hasPoem ? 'hover' : undefined}
+      onClick={onSelect}
+      className={cn(
+        'relative mx-auto flex h-9 w-9 flex-col items-center justify-center gap-1 rounded-full text-sm transition-colors duration-300 disabled:text-ink-faint/50',
+        isSelected ? 'text-paper' : 'text-ink-soft enabled:hover:bg-paper-soft enabled:hover:text-ink',
+      )}
     >
-      <span className={isToday ? 'font-medium text-bronze' : ''}>{day}</span>
-      {poem && (
+      {isSelected && (
+        <motion.span
+          layoutId="calendar-selected-day"
+          transition={SPRING.snappy}
+          className="absolute inset-0 rounded-full bg-ink"
+        />
+      )}
+      <span className={cn('relative', isToday && !isSelected && 'font-medium text-bronze')}>{day}</span>
+      {hasPoem && !isSelected && (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -44,26 +64,38 @@ function CalendarDay({
   )
 }
 
-export function Calendar({ poems }: { poems: Poem[] }) {
-  const navigate = useNavigate()
+interface CalendarProps {
+  /** Day keys (YYYY-MM-DD) that have a poem. */
+  poemDays: ReadonlySet<string>
+  selectedKey: string | null
+  onSelect: (key: string) => void
+}
+
+export function Calendar({ poemDays, selectedKey, onSelect }: CalendarProps) {
   const today = useMemo(() => new Date(), [])
-  const [cursor, setCursor] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1))
+  const [cursor, setCursor] = useState(() =>
+    selectedKey ? monthOf(selectedKey) : new Date(today.getFullYear(), today.getMonth(), 1),
+  )
 
-  const poemsByDay = useMemo(() => {
-    const map = new Map<string, Poem>()
-    for (const poem of poems) {
-      const d = new Date(poem.created_at)
-      if (d.getFullYear() === cursor.getFullYear() && d.getMonth() === cursor.getMonth()) {
-        map.set(String(d.getDate()), poem)
-      }
-    }
-    return map
-  }, [poems, cursor])
+  // Follow the selection across months (e.g. stepping with the arrow keys
+  // from Oct 1 back to Sep 30), but leave manual month browsing alone.
+  useEffect(() => {
+    if (selectedKey) setCursor(monthOf(selectedKey))
+  }, [selectedKey])
 
-  const firstWeekday = new Date(cursor.getFullYear(), cursor.getMonth(), 1).getDay()
+  const firstWeekday = cursor.getDay()
   const daysInMonth = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0).getDate()
   const cells = [...Array(firstWeekday).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)]
   const monthKey = `${cursor.getFullYear()}-${cursor.getMonth()}`
+  const todayKey = dayKey(today)
+
+  const pagesThisMonth = useMemo(() => {
+    let n = 0
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (poemDays.has(dayKey(new Date(cursor.getFullYear(), cursor.getMonth(), d)))) n++
+    }
+    return n
+  }, [poemDays, cursor, daysInMonth])
 
   return (
     <div>
@@ -78,16 +110,21 @@ export function Calendar({ poems }: { poems: Poem[] }) {
           <ChevronLeft size={17} strokeWidth={1.5} />
         </button>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={monthKey}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="font-display text-lg italic text-ink"
+            className="text-center"
           >
-            {monthName(cursor)} {cursor.getFullYear()}
+            <div className="font-display text-lg italic text-ink">
+              {monthName(cursor)} {cursor.getFullYear()}
+            </div>
+            <div className="mt-0.5 text-[10px] uppercase tracking-[0.12em] text-ink-faint">
+              {pagesThisMonth === 0 ? 'No pages' : pagesThisMonth === 1 ? '1 page' : `${pagesThisMonth} pages`}
+            </div>
           </motion.div>
         </AnimatePresence>
 
@@ -111,19 +148,19 @@ export function Calendar({ poems }: { poems: Poem[] }) {
 
         {cells.map((day, i) => {
           if (day === null) return <div key={`empty-${monthKey}-${i}`} />
-          const poem = poemsByDay.get(String(day))
-          const isToday =
-            today.getFullYear() === cursor.getFullYear() &&
-            today.getMonth() === cursor.getMonth() &&
-            today.getDate() === day
+          const date = new Date(cursor.getFullYear(), cursor.getMonth(), day)
+          const key = dayKey(date)
+          const hasPoem = poemDays.has(key)
 
           return (
             <CalendarDay
-              key={`${monthKey}-${day}`}
+              key={key}
               day={day}
-              poem={poem}
-              isToday={isToday}
-              onOpen={(p) => navigate(`/write/${p.id}`)}
+              hasPoem={hasPoem}
+              isToday={key === todayKey}
+              isSelected={key === selectedKey}
+              label={`${monthName(date)} ${day}${hasPoem ? '' : ', no poem'}`}
+              onSelect={() => onSelect(key)}
             />
           )
         })}

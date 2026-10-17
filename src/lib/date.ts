@@ -74,3 +74,11 @@ export function calculateStreak(dates: Date[]): number {
 
   return streak
 }
+
+// Stable local-calendar key (YYYY-MM-DD) for a date, used to match poems
+// to calendar days and to keep the selected day in the URL.
+export function dayKey(date: Date): string {
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${m}-${d}`
+}
