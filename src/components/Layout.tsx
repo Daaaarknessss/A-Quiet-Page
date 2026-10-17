@@ -4,9 +4,11 @@ import { JournalHeader } from '@/components/JournalHeader'
 import { GrainOverlay } from '@/components/GrainOverlay'
 import { AmbientBackground } from '@/components/AmbientBackground'
 import { CustomCursor } from '@/components/CustomCursor'
+import { useRouteScroll } from '@/hooks/useRouteScroll'
 
 export function Layout() {
   const location = useLocation()
+  useRouteScroll()
 
   return (
     <div className="relative min-h-dvh">

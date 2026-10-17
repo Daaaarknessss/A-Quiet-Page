@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import { usePoems, useDeletePoem } from '@/hooks/usePoems'
@@ -14,6 +14,10 @@ import { firstLine } from '@/types/poem'
 export default function Write() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
+  // Step back through history when we arrived from inside the app, so the
+  // archive restores its scroll position; fall back for direct links.
+  const backToArchive = () => (location.key !== 'default' ? navigate(-1) : navigate('/journal'))
   const { data: poems = [], isLoading } = usePoems()
   const deletePoem = useDeletePoem()
 
@@ -36,7 +40,7 @@ export default function Write() {
     setClosing(true)
     const success = await saveNow()
     if (success) {
-      setTimeout(() => navigate('/journal'), 500)
+      setTimeout(backToArchive, 500)
     } else {
       setClosing(false)
     }
@@ -56,7 +60,7 @@ export default function Write() {
   const handleDelete = () => {
     if (!poem) return
     deletePoem.mutate(poem.id)
-    navigate('/journal')
+    backToArchive()
   }
 
   const date = poem ? new Date(poem.created_at) : new Date()
@@ -80,7 +84,7 @@ export default function Write() {
             <div className="mb-2 text-[11px] uppercase tracking-[0.12em] text-ink-faint">{weekdayName(date)}</div>
             <button
               type="button"
-              onClick={() => navigate('/journal')}
+              onClick={backToArchive}
               className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors duration-300 hover:text-ink"
             >
               <ArrowLeft size={13} strokeWidth={1.5} />

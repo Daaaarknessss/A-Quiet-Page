@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from 'react'
 import Lenis from 'lenis'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { prefersReducedMotion } from '@/lib/motion'
+import { setLenis } from '@/lib/scroll'
 
 export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -13,6 +14,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       smoothWheel: true,
     })
 
+    setLenis(lenis)
     lenis.on('scroll', ScrollTrigger.update)
 
     const onTick = (time: number) => {
@@ -23,6 +25,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
 
     return () => {
       gsap.ticker.remove(onTick)
+      setLenis(null)
       lenis.destroy()
     }
   }, [])
