@@ -15,8 +15,8 @@ export const FOR_HER = {
   roomEyebrow: 'Everything I wrote',
   roomTitle: 'thinking of you',
 
-  closing: 'All of it, always, for you.',
-  signature: 'Naman',
+  closing: 'That’s all of them. So far.',
+  signature: '— n.',
 
   replyPrompt: 'Write something back',
   replyPlaceholder: 'Anything at all…',

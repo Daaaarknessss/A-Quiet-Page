@@ -33,7 +33,6 @@ export default {
       fontFamily: {
         serif: ['"EB Garamond"', '"Cormorant Garamond"', 'Georgia', 'serif'],
         display: ['"Cormorant Garamond"', '"EB Garamond"', 'Georgia', 'serif'],
-        script: ['"Pinyon Script"', '"Cormorant Garamond"', 'cursive'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
       maxWidth: {

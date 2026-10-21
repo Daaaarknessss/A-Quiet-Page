@@ -83,7 +83,7 @@ export function Room({ poems, onReplay }: { poems: SharedPoem[]; onReplay: () =>
           whileInView={{ opacity: 1, clipPath: 'inset(0 0% 0 0)' }}
           viewport={{ once: true }}
           transition={{ duration: 2.4, delay: 0.8, ease: EASE.quiet }}
-          className="mt-8 font-script text-5xl text-romance-candle/90"
+          className="mt-6 font-display text-2xl italic text-romance-candle/80"
         >
           {FOR_HER.signature}
         </motion.p>
