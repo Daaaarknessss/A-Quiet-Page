@@ -28,7 +28,8 @@ A private place to write one poem a day.
 
 - `/` is a landing page with two doors: **the desk** (`/studio`, the journal) and **For you** (`/for-you`).
 - Run [`supabase/for_her.sql`](supabase/for_her.sql) once in the SQL editor. It adds `poems.shared`, plus the `moments` (her lines) and `replies` (her notes back) tables.
-- In the studio, the **For her** tab is where you write and order the lines, heart the poems she should read, read her replies, preview her page and copy her link.
+- Every poem you write appears in her book, oldest first.
+- In the studio, the **For her** tab is where you write and order the lines, read her replies, preview her page and copy her link.
 - Send her `/for-you` directly. She sees: a candle and one line → your lines drifting in one by one (tap to move on) → a candlelit room with your shared poems as a book, a closing note, and a box to write back.
 - After she's seen the lines once, reopening the page goes straight to the room ("Begin again" replays it). `/for-you?preview` always starts from the beginning.
 - Every other word on her page (threshold line, closing, signature, button labels) lives in [`src/lib/forHer.ts`](src/lib/forHer.ts).

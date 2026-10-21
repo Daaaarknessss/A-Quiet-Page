@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDown, ArrowUp, Check, Copy, Eye, Heart, Plus, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, Check, Copy, Eye, Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { PaperContainer } from '@/components/PaperContainer'
 import { usePoems } from '@/hooks/usePoems'
@@ -11,14 +11,12 @@ import {
   useMoments,
   useReorderMoments,
   useReplies,
-  useSetPoemShared,
   useUpdateMoment,
 } from '@/hooks/useForHer'
 import { FOR_HER } from '@/lib/forHer'
-import { formatCardDate, formatLongDate } from '@/lib/date'
+import { formatLongDate } from '@/lib/date'
 import { EASE } from '@/lib/motion'
 import { cn } from '@/lib/cn'
-import { firstLine } from '@/types/poem'
 import type { Moment } from '@/types/forHer'
 
 /** His side of her page: the lines, which poems she sees, and her notes. */
@@ -50,8 +48,8 @@ export default function ForHerStudio() {
           <MomentsEditor moments={moments.data ?? []} loading={moments.isLoading} />
         </Section>
 
-        <Section title="Pages she’ll read" hint="Tap the heart on any poem to put it in her book.">
-          <SharedPoemsPicker />
+        <Section title="Pages she’ll read" hint="Every poem you write, oldest first.">
+          <BookSummary />
         </Section>
 
         <Section title="Her notes" hint="Anything she writes back lands here.">
@@ -280,58 +278,19 @@ function IconButton({
   )
 }
 
-// ---------- Shared poems ----------
+// ---------- Her book ----------
 
-function SharedPoemsPicker() {
+function BookSummary() {
   const { data: poems = [], isLoading } = usePoems()
-  const setShared = useSetPoemShared()
-  const count = poems.filter((p) => p.shared).length
+  const count = poems.filter((p) => p.content.trim()).length
 
   if (isLoading) return <p className="text-sm italic text-ink-faint">Loading…</p>
-  if (poems.length === 0) return <p className="text-sm italic text-ink-faint">No poems written yet.</p>
-
   return (
-    <div>
-      <p className="mb-4 text-xs uppercase tracking-[0.14em] text-ink-faint">
-        {count} of {poems.length} in her book
-      </p>
-      <ul className="divide-y divide-line/70 border-y border-line/70">
-        {poems.map((p) => {
-          const { day, month, year } = formatCardDate(new Date(p.created_at))
-          const shared = !!p.shared
-          return (
-            <li key={p.id}>
-              <button
-                type="button"
-                onClick={() => setShared.mutate({ id: p.id, shared: !shared })}
-                data-cursor="hover"
-                aria-pressed={shared}
-                className="flex w-full items-center gap-5 py-4 text-left"
-              >
-                <span className="w-20 flex-none text-right text-xs uppercase tracking-[0.1em] text-ink-faint">
-                  {day} {month} {year}
-                </span>
-                <span
-                  className={cn(
-                    'min-w-0 flex-1 truncate font-display text-lg transition-colors duration-300',
-                    shared ? 'text-ink' : 'text-ink-soft',
-                  )}
-                >
-                  {firstLine(p.content)}
-                </span>
-                <motion.span
-                  animate={{ scale: shared ? [1, 1.3, 1] : 1 }}
-                  transition={{ duration: 0.4 }}
-                  className={cn('flex-none', shared ? 'text-terracotta' : 'text-ink-faint/50')}
-                >
-                  <Heart size={17} strokeWidth={1.5} fill={shared ? 'currentColor' : 'none'} />
-                </motion.span>
-              </button>
-            </li>
-          )
-        })}
-      </ul>
-    </div>
+    <p className="font-display text-lg italic text-ink-soft">
+      {count === 0
+        ? 'No poems written yet — her book fills as you write.'
+        : `All ${count} of your poems are in her book, and every new one joins it.`}
+    </p>
   )
 }
 

@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-import { momentsKey, poemsKey, repliesKey, sharedPoemsKey } from '@/lib/queryClient'
+import { momentsKey, repliesKey, sharedPoemsKey } from '@/lib/queryClient'
 import type { Moment, Reply, SharedPoem } from '@/types/forHer'
-import type { Poem } from '@/types/poem'
 
 // ---------- Moments (the lines) ----------
 
@@ -106,9 +105,9 @@ export function useReorderMoments() {
   })
 }
 
-// ---------- Shared poems ----------
+// ---------- Her book ----------
 
-/** Her side: only what's been marked for her, oldest first like a book. */
+/** Her side: every poem, oldest first like a book. */
 export function useSharedPoems() {
   return useQuery({
     queryKey: sharedPoemsKey,
@@ -116,35 +115,10 @@ export function useSharedPoems() {
       const { data, error } = await supabase
         .from('poems')
         .select('id, content, created_at')
-        .eq('shared', true)
         .order('created_at', { ascending: true })
       if (error) throw error
       return (data ?? []).filter((p) => p.content.trim().length > 0)
     },
-  })
-}
-
-export function useSetPoemShared() {
-  const client = useQueryClient()
-  return useMutation({
-    mutationFn: async (input: { id: string; shared: boolean }) => {
-      // Touches only `shared`, so the poem's updated_at trigger is the only
-      // side effect — content is never rewritten from here.
-      const { error } = await supabase.from('poems').update({ shared: input.shared }).eq('id', input.id)
-      if (error) throw error
-    },
-    onMutate: async (input) => {
-      await client.cancelQueries({ queryKey: poemsKey })
-      const previous = client.getQueryData<Poem[]>(poemsKey)
-      client.setQueryData<Poem[]>(poemsKey, (old) =>
-        (old ?? []).map((p) => (p.id === input.id ? { ...p, shared: input.shared } : p)),
-      )
-      return { previous }
-    },
-    onError: (_err, _input, context) => {
-      if (context?.previous) client.setQueryData(poemsKey, context.previous)
-    },
-    onSettled: () => client.invalidateQueries({ queryKey: sharedPoemsKey }),
   })
 }
 

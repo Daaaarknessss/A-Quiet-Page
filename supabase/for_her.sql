@@ -1,7 +1,7 @@
 -- The Quiet Page — "For you" additions
 -- Run this in the Supabase SQL editor after schema.sql. Safe to re-run.
 
--- Which poems she gets to read.
+-- Not used right now (every poem is in her book); kept for picking poems later.
 alter table poems add column if not exists shared boolean not null default false;
 
 -- The lines that drift in, one at a time, when she opens the page.
