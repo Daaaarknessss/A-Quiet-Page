@@ -6,6 +6,7 @@ export interface Database {
           id: string
           title: string | null
           content: string
+          shared: boolean
           created_at: string
           updated_at: string
         }
@@ -13,6 +14,7 @@ export interface Database {
           id?: string
           title?: string | null
           content?: string
+          shared?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -20,8 +22,51 @@ export interface Database {
           id?: string
           title?: string | null
           content?: string
+          shared?: boolean
           created_at?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      moments: {
+        Row: {
+          id: string
+          position: number
+          text: string
+          pause_ms: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          position?: number
+          text?: string
+          pause_ms?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          position?: number
+          text?: string
+          pause_ms?: number | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      replies: {
+        Row: {
+          id: string
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          body: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          body?: string
+          created_at?: string
         }
         Relationships: []
       }

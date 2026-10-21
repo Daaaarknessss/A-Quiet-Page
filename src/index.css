@@ -164,3 +164,59 @@ textarea:focus::placeholder {
 .cursor-none {
   cursor: none;
 }
+
+/* ---------- Her page ---------- */
+
+/* Candlelit night: its own palette, independent of the light/dark toggle. */
+.romance {
+  --r-night: 19 11 14;
+  --r-ink: 247 235 224;
+  --r-soft: 218 193 180;
+  --r-faint: 156 126 118;
+  --r-rose: 232 156 152;
+  --r-candle: 245 198 140;
+  --r-line: 82 56 58;
+
+  background-color: rgb(var(--r-night));
+  color: rgb(var(--r-ink));
+  color-scheme: dark;
+}
+
+.romance ::selection {
+  background: rgb(var(--r-rose) / 0.3);
+  color: rgb(var(--r-ink));
+}
+
+.romance :focus-visible {
+  outline-color: rgb(var(--r-candle) / 0.6);
+}
+
+.romance textarea {
+  caret-color: rgb(var(--r-candle));
+}
+
+.romance .grain-overlay {
+  opacity: 0.06;
+}
+
+/* soft glow behind the words, like text read by candlelight */
+.candle-text {
+  text-shadow: 0 0 28px rgb(var(--r-candle) / 0.22), 0 0 2px rgb(var(--r-ink) / 0.2);
+}
+
+@keyframes candle-flicker {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  22% { opacity: 1; transform: scale(1.03); }
+  48% { opacity: 0.82; transform: scale(0.985); }
+  71% { opacity: 0.96; transform: scale(1.015); }
+}
+
+.candle-flicker {
+  animation: candle-flicker 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .candle-flicker {
+    animation: none;
+  }
+}

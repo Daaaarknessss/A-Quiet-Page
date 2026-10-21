@@ -17,7 +17,7 @@ export default function Write() {
   const location = useLocation()
   // Step back through history when we arrived from inside the app, so the
   // archive restores its scroll position; fall back for direct links.
-  const backToArchive = () => (location.key !== 'default' ? navigate(-1) : navigate('/journal'))
+  const backToArchive = () => (location.key !== 'default' ? navigate(-1) : navigate('/studio/journal'))
   const { data: poems = [], isLoading } = usePoems()
   const deletePoem = useDeletePoem()
 
@@ -50,7 +50,7 @@ export default function Write() {
     return (
       <div className="py-24 text-center">
         <p className="mb-6 font-display text-xl italic text-ink-soft">This page could not be found.</p>
-        <Button variant="ghost" onClick={() => navigate('/journal')}>
+        <Button variant="ghost" onClick={() => navigate('/studio/journal')}>
           Back to the archive
         </Button>
       </div>

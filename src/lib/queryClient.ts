@@ -11,3 +11,6 @@ export const queryClient = new QueryClient({
 })
 
 export const poemsKey = ['poems'] as const
+export const momentsKey = ['moments'] as const
+export const repliesKey = ['replies'] as const
+export const sharedPoemsKey = ['poems', 'shared'] as const

@@ -2,6 +2,8 @@ export interface Poem {
   id: string
   title: string | null
   content: string
+  /** Missing until supabase/for_her.sql has been run. */
+  shared?: boolean
   created_at: string
   updated_at: string
 }

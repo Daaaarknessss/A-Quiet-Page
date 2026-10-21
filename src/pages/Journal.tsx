@@ -59,7 +59,7 @@ export default function Journal() {
   }, [poems, year, query])
 
   if (!isLoading && poems.length === 0) {
-    return <EmptyState onBegin={() => navigate('/')} />
+    return <EmptyState onBegin={() => navigate('/studio')} />
   }
 
   return (

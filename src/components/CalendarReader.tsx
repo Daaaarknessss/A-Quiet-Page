@@ -106,7 +106,7 @@ export function CalendarReader({ poems, selectedKey, onSelect }: CalendarReaderP
                 <div className="flex items-center gap-5">
                   <span className="hidden sm:inline">{wordCount(poem.content)} words</span>
                   <Link
-                    to={`/write/${poem.id}`}
+                    to={`/studio/write/${poem.id}`}
                     data-cursor="hover"
                     className="flex items-center gap-1.5 transition-colors duration-300 hover:text-ink"
                   >

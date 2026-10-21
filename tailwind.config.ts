@@ -19,10 +19,21 @@ export default {
         forest: 'rgb(var(--color-forest) / <alpha-value>)',
         bronze: 'rgb(var(--color-bronze) / <alpha-value>)',
         terracotta: 'rgb(var(--color-terracotta) / <alpha-value>)',
+        // Her page's palette — only defined inside `.romance`.
+        romance: {
+          night: 'rgb(var(--r-night) / <alpha-value>)',
+          ink: 'rgb(var(--r-ink) / <alpha-value>)',
+          soft: 'rgb(var(--r-soft) / <alpha-value>)',
+          faint: 'rgb(var(--r-faint) / <alpha-value>)',
+          rose: 'rgb(var(--r-rose) / <alpha-value>)',
+          candle: 'rgb(var(--r-candle) / <alpha-value>)',
+          line: 'rgb(var(--r-line) / <alpha-value>)',
+        },
       },
       fontFamily: {
         serif: ['"EB Garamond"', '"Cormorant Garamond"', 'Georgia', 'serif'],
         display: ['"Cormorant Garamond"', '"EB Garamond"', 'Georgia', 'serif'],
+        script: ['"Pinyon Script"', '"Cormorant Garamond"', 'cursive'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
       maxWidth: {

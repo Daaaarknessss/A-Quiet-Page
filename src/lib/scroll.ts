@@ -12,13 +12,13 @@ export function getScrollY() {
   return lenis ? lenis.scroll : window.scrollY
 }
 
-export function scrollToY(y: number) {
+export function scrollToY(y: number, { smooth = false }: { smooth?: boolean } = {}) {
   if (lenis) {
     // The new page may have a different height than Lenis last measured;
     // without this the target gets clamped to the old page's limit.
     lenis.resize()
-    lenis.scrollTo(y, { immediate: true, force: true })
+    lenis.scrollTo(y, { immediate: !smooth, force: true })
   } else {
-    window.scrollTo(0, y)
+    window.scrollTo({ top: y, behavior: smooth ? 'smooth' : 'auto' })
   }
 }

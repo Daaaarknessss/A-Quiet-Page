@@ -5,7 +5,8 @@ import { cn } from '@/lib/cn'
 
 export function JournalHeader() {
   const location = useLocation()
-  const onJournal = location.pathname.startsWith('/journal')
+  const onJournal = location.pathname.startsWith('/studio/journal')
+  const onForHer = location.pathname.startsWith('/studio/for-her')
 
   return (
     <motion.header
@@ -15,16 +16,16 @@ export function JournalHeader() {
       className="mx-auto flex w-full max-w-3xl items-center justify-between px-6 pt-8 sm:px-8"
     >
       <Link
-        to="/"
+        to="/studio"
         data-cursor="hover"
         className="font-display text-[15px] italic tracking-wide text-ink-soft transition-colors duration-300 hover:text-ink"
       >
         The Quiet Page
       </Link>
 
-      <nav className="flex items-center gap-6">
+      <nav className="flex items-center gap-4 sm:gap-6">
         <Link
-          to="/journal"
+          to="/studio/journal"
           data-cursor="hover"
           className={cn(
             'font-sans text-[13px] uppercase tracking-[0.14em] transition-colors duration-300',
@@ -32,6 +33,16 @@ export function JournalHeader() {
           )}
         >
           Archive
+        </Link>
+        <Link
+          to="/studio/for-her"
+          data-cursor="hover"
+          className={cn(
+            'font-sans text-[13px] uppercase tracking-[0.14em] transition-colors duration-300',
+            onForHer ? 'text-ink' : 'text-ink-faint hover:text-ink-soft',
+          )}
+        >
+          For her
         </Link>
         <ThemeToggle />
       </nav>

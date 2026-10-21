@@ -38,7 +38,7 @@ export const PoemCard = memo(function PoemCard({ poem, onDelete, tilt = 0 }: Poe
           opacity/transform/filter without fighting Framer's layout system
           on the row above. */}
       <div data-reveal>
-        <Link ref={magneticRef} to={`/write/${poem.id}`} data-cursor="hover" className="flex gap-6 sm:gap-10">
+        <Link ref={magneticRef} to={`/studio/write/${poem.id}`} data-cursor="hover" className="flex gap-6 sm:gap-10">
           <motion.div layoutId={`poem-day-${poem.id}`} className="w-16 flex-none text-right sm:w-20">
             <div className="font-display text-3xl font-light leading-none text-ink sm:text-4xl">{day}</div>
             <div className="mt-1 text-[11px] uppercase tracking-[0.12em] text-ink-faint">
