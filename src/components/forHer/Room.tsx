@@ -23,7 +23,7 @@ export function Room({ poems, onReplay }: { poems: SharedPoem[]; onReplay: () =>
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 1.6, ease: EASE.quiet }}
-      className="relative z-10 mx-auto w-full max-w-2xl px-6 pb-24 sm:px-8"
+      className="relative z-10 mx-auto w-full max-w-4xl px-6 pb-24 sm:px-8"
     >
       {/* Opening */}
       <header className="flex min-h-[78dvh] flex-col items-center justify-center text-center">
