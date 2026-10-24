@@ -159,16 +159,16 @@ p {
   text-wrap: pretty;
 }
 
-/* A classic two-line initial for poems being read (not edited — a textarea
-   can't style its first letter). */
+/* A raised initial for poems being read (not edited — a textarea can't style
+   its first letter). It sits on the first line's baseline, part of the word,
+   and its zero line-height keeps that line from growing taller. */
 .drop-cap::first-letter,
 .drop-cap-letter {
-  float: left;
-  margin: 0.08em 0.1em 0 -0.02em;
+  margin-right: 0.03em;
   font-family: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
-  font-size: 3.5em;
+  font-size: 1.9em;
   font-weight: 400;
-  line-height: 0.8;
+  line-height: 0;
   color: rgb(var(--color-bronze));
 }
 
