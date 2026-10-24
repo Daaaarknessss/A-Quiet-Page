@@ -75,7 +75,7 @@ export function CalendarReader({ poems, selectedKey, onSelect }: CalendarReaderP
                 {formatLongDate(new Date(poem.created_at))}, {new Date(poem.created_at).getFullYear()}
               </h2>
 
-              <p className="mt-8 flex-1 whitespace-pre-line font-serif text-[21px] leading-[1.8] text-ink sm:text-[22px]">
+              <p className="drop-cap mt-8 flex-1 whitespace-pre-line font-serif text-[21px] leading-[1.8] text-ink sm:text-[22px]">
                 {poem.content}
               </p>
 

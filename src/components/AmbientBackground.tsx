@@ -1,9 +1,19 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from '@/lib/gsap'
 import { prefersReducedMotion } from '@/lib/motion'
+import { daylightAt } from '@/lib/daylight'
+
+// Often enough to catch the hour turning, rarely enough to cost nothing.
+const DAYLIGHT_CHECK_MS = 5 * 60_000
 
 export function AmbientBackground() {
   const lightRef = useRef<HTMLDivElement>(null)
+  const [daylight, setDaylight] = useState(daylightAt)
+
+  useEffect(() => {
+    const timer = setInterval(() => setDaylight(daylightAt()), DAYLIGHT_CHECK_MS)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     const el = lightRef.current
@@ -22,7 +32,12 @@ export function AmbientBackground() {
   }, [])
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+    <div
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      aria-hidden="true"
+      data-daylight={daylight}
+    >
+      <div className="daylight-wash" />
       <div ref={lightRef} className="ambient-light" />
       <div className="grain-overlay" />
     </div>

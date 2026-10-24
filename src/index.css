@@ -95,6 +95,23 @@ body {
   opacity: 0.05;
 }
 
+/* The light in the room follows the clock: pale gold at dawn, white at
+   noon, rose at dusk, blue ink at night. AmbientBackground sets the phase. */
+[data-daylight] {
+  --daylight: var(--color-bronze);
+  --daylight-glow: 0.1;
+  --daylight-wash: 0;
+}
+[data-daylight='dawn'] { --daylight: 238 196 136; --daylight-glow: 0.16; --daylight-wash: 0.12; }
+[data-daylight='day'] { --daylight: 255 251 242; --daylight-glow: 0.55; --daylight-wash: 0.35; }
+[data-daylight='dusk'] { --daylight: 224 146 136; --daylight-glow: 0.14; --daylight-wash: 0.1; }
+[data-daylight='night'] { --daylight: 72 92 142; --daylight-glow: 0.1; --daylight-wash: 0.08; }
+
+.dark [data-daylight='dawn'] { --daylight: 226 180 120; --daylight-glow: 0.08; --daylight-wash: 0.06; }
+.dark [data-daylight='day'] { --daylight: 236 226 206; --daylight-glow: 0.05; --daylight-wash: 0.04; }
+.dark [data-daylight='dusk'] { --daylight: 214 130 124; --daylight-glow: 0.08; --daylight-wash: 0.06; }
+.dark [data-daylight='night'] { --daylight: 96 120 186; --daylight-glow: 0.09; --daylight-wash: 0.08; }
+
 /* slow-moving warm light, like sunlight drifting across paper. The
    gradient is static; AmbientBackground moves it with transforms. */
 .ambient-light {
@@ -104,16 +121,60 @@ body {
   top: calc(20vh - 45vmax);
   width: 90vmax;
   height: 90vmax;
-  background: radial-gradient(closest-side, rgb(var(--color-bronze) / 0.1), transparent);
+  background: radial-gradient(closest-side, rgb(var(--daylight) / var(--daylight-glow)), transparent);
   will-change: transform;
 }
 
-.dark .ambient-light {
-  background: radial-gradient(closest-side, rgb(var(--color-bronze) / 0.06), transparent);
+/* light coming in from above, tinted by the hour */
+.daylight-wash {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgb(var(--daylight) / var(--daylight-wash)), transparent 65%);
 }
 
 .font-feature-numbers {
   font-variant-numeric: oldstyle-nums;
+}
+
+/* ---------- Typography ---------- */
+
+.font-display,
+.font-serif {
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  font-variant-numeric: oldstyle-nums proportional-nums;
+}
+
+.font-serif {
+  hanging-punctuation: first allow-end last;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* A classic two-line initial for poems being read (not edited — a textarea
+   can't style its first letter). */
+.drop-cap::first-letter,
+.drop-cap-letter {
+  float: left;
+  margin: 0.08em 0.1em 0 -0.02em;
+  font-family: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  font-size: 3.5em;
+  font-weight: 400;
+  line-height: 0.8;
+  color: rgb(var(--color-bronze));
+}
+
+.romance .drop-cap-letter {
+  color: rgb(var(--r-candle));
+  text-shadow: 0 0 24px rgb(var(--r-candle) / 0.35);
 }
 
 textarea {
@@ -215,8 +276,24 @@ textarea:focus::placeholder {
   animation: candle-flicker 6s ease-in-out infinite;
 }
 
+/* stars above the room; each one carries its own brightness and rhythm */
+@keyframes twinkle {
+  0%, 100% { opacity: var(--star-a); }
+  50% { opacity: calc(var(--star-a) * 0.2); }
+}
+
+.star {
+  position: absolute;
+  border-radius: 999px;
+  background: rgb(var(--r-ink));
+  box-shadow: 0 0 6px rgb(var(--r-candle) / 0.6);
+  opacity: var(--star-a);
+  animation: twinkle var(--star-t) ease-in-out var(--star-d) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .candle-flicker {
+  .candle-flicker,
+  .star {
     animation: none;
   }
 }

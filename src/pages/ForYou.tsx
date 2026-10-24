@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Volume2, VolumeX } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { Embers } from '@/components/forHer/Embers'
+import { Candlelight } from '@/components/forHer/Candlelight'
+import { Stars } from '@/components/forHer/Stars'
 import { Threshold } from '@/components/forHer/Threshold'
 import { LineSequence, type Line } from '@/components/forHer/LineSequence'
 import { Room } from '@/components/forHer/Room'
@@ -80,6 +82,8 @@ export default function ForYou() {
         <div className="grain-overlay" />
       </div>
       <Embers intensity={glow.embers} />
+      <Stars active={phase === 'room'} />
+      <Candlelight active={phase !== 'threshold'} />
 
       {song.available && phase !== 'threshold' && (
         <motion.button

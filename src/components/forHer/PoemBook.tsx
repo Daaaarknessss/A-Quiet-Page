@@ -9,6 +9,72 @@ import type { SharedPoem } from '@/types/forHer'
 
 const SWIPE_PX = 60
 
+// Ink timing: when the first line starts, the gap between lines, and how
+// long a whole poem may take however long it is.
+const INK_START = 0.35
+const INK_STEP = 0.14
+const INK_MAX = 3
+const INK_GAP = 0.4
+
+function poemLines(content: string) {
+  return content.trim().split('\n')
+}
+
+function inkStep(lineCount: number) {
+  return Math.min(INK_STEP, INK_MAX / Math.max(lineCount, 1))
+}
+
+function inkDuration(content: string) {
+  const count = poemLines(content).length
+  return count * inkStep(count)
+}
+
+/**
+ * A poem that appears line by line, each one surfacing from a soft blur as
+ * if the ink were still settling. The first letter can be a candlelit
+ * initial.
+ */
+function InkedPoem({
+  content,
+  delay,
+  dropCap,
+  still,
+}: {
+  content: string
+  delay: number
+  dropCap: boolean
+  still: boolean
+}) {
+  const lines = poemLines(content)
+  const step = inkStep(lines.length)
+
+  return (
+    <div className="font-serif text-[20px] leading-[1.85] text-romance-ink sm:text-[22px]">
+      {lines.map((line, i) => {
+        const initial = i === 0 && dropCap ? line.match(/^[\p{P}\s]*[\p{L}\p{N}]/u)?.[0] : undefined
+        return (
+          <motion.span
+            key={i}
+            className="block min-h-[1.85em]"
+            initial={still ? { opacity: 0 } : { opacity: 0, y: 5, filter: 'blur(5px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } }}
+            transition={{ duration: still ? 0.4 : 1.1, delay: still ? 0 : delay + i * step, ease: EASE.quiet }}
+          >
+            {initial ? (
+              <>
+                <span className="drop-cap-letter">{initial.trim()}</span>
+                {line.slice(initial.length)}
+              </>
+            ) : (
+              line
+            )}
+          </motion.span>
+        )
+      })}
+    </div>
+  )
+}
+
 /**
  * Her book as a calendar: pick any day with a glowing dot to read what was
  * written then. Swipe, the arrows, or ← → step to the neighbouring poem.
@@ -79,6 +145,12 @@ export function PoemBook({ poems }: { poems: SharedPoem[] }) {
   if (!activeKey) return null
   const date = new Date(dayPoems[0].created_at)
 
+  // Each poem on the page starts inking once the one before it is written.
+  const inkDelays = dayPoems.reduce<number[]>((delays, _poem, i) => {
+    const prev = i === 0 ? INK_START - INK_GAP : delays[i - 1] + inkDuration(dayPoems[i - 1].content)
+    return [...delays, prev + INK_GAP]
+  }, [])
+
   return (
     <div className="grid gap-10 md:grid-cols-[270px_minmax(0,1fr)] md:gap-12">
       <div className="md:sticky md:top-10 md:self-start">
@@ -121,6 +193,13 @@ export function PoemBook({ poems }: { poems: SharedPoem[] }) {
             onDragEnd={onDragEnd}
             className="relative touch-pan-y overflow-hidden rounded-[22px] border border-romance-line/60 bg-gradient-to-b from-romance-candle/[0.07] via-romance-rose/[0.03] to-transparent px-7 pb-9 pt-10 shadow-[0_30px_80px_-40px_rgb(var(--r-candle)/0.35)] sm:px-12 sm:pb-12 sm:pt-12"
           >
+            {/* paper: grain, and the crease from where it was folded */}
+            <div className="grain-overlay" aria-hidden="true" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-[36%]">
+              <div className="h-px bg-gradient-to-r from-transparent via-romance-ink/[0.07] to-transparent" />
+              <div className="h-10 bg-gradient-to-b from-black/[0.12] to-transparent" />
+            </div>
+
             {/* a faint warm light falling across the page */}
             <div
               aria-hidden="true"
@@ -136,15 +215,9 @@ export function PoemBook({ poems }: { poems: SharedPoem[] }) {
               </h3>
 
               {dayPoems.map((poem, i) => (
-                <p
-                  key={poem.id}
-                  className={
-                    'whitespace-pre-line font-serif text-[20px] leading-[1.85] text-romance-ink sm:text-[22px] ' +
-                    (i === 0 ? 'mt-8' : 'mt-10 border-t border-romance-line/50 pt-10')
-                  }
-                >
-                  {poem.content}
-                </p>
+                <div key={poem.id} className={i === 0 ? 'mt-8' : 'mt-10 border-t border-romance-line/50 pt-10'}>
+                  <InkedPoem content={poem.content} delay={inkDelays[i]} dropCap={i === 0} still={still} />
+                </div>
               ))}
             </div>
           </motion.article>
